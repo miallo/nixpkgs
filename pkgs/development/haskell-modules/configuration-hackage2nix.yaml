@@ -3192,9 +3192,7 @@ broken-packages:
   - arguedit
   - ariadne
   - arion
-  - arith-encode
   - arithmetic-circuits
-  - arithmoi
   - armada
   - armor
   - arpa
@@ -3791,7 +3789,6 @@ broken-packages:
   - canteven-log
   - canteven-parsedate
   - cantor
-  - cantor-pairing
   - cao
   - cap
   - Capabilities
@@ -4345,7 +4342,6 @@ broken-packages:
   - custom-prelude
   - CV
   - cv-combinators
-  - cyclotomic
   - cypher
   - d-bus
   - d3js
@@ -4879,7 +4875,6 @@ broken-packages:
   - EnumContainers
   - enumerate
   - enumerate-function
-  - enumeration
   - enumerator
   - enumerator-fd
   - enumerator-tf
@@ -6968,7 +6963,6 @@ broken-packages:
   - int-multimap
   - intcode
   - integer-pure
-  - integer-roots
   - integreat
   - intel-aes
   - intensional-datatys
@@ -9047,7 +9041,6 @@ broken-packages:
   - qtah-generator
   - qtah-qt5
   - QuadEdge
-  - quadratic-irrational
   - QuadTree
   - quantfin
   - quantification
