@@ -22,6 +22,7 @@ action=
 buildNix=1
 fast=
 rollback=
+generation=
 upgrade=
 upgrade_all=
 repair=
@@ -53,6 +54,14 @@ while [ "$#" -gt 0 ]; do
         ;;
       --rollback)
         rollback=1
+        ;;
+      --generation)
+        if [ $# -eq 0 ]; then
+            echo "Must provide a generation number" >&2
+            echo "Usage: \`$(basename $0) ${action:-switch} --generation <NUMBER>'" >&2
+            exit 1
+        fi
+        generation="$1"; shift 1
         ;;
       --upgrade)
         upgrade=1
@@ -344,7 +353,7 @@ fi
 
 # First build Nix, since NixOS may require a newer version than the
 # current one.
-if [ -n "$rollback" -o "$action" = dry-build ]; then
+if [ "$action" = dry-build ]; then
     buildNix=
 fi
 
@@ -503,7 +512,7 @@ fi
 # Either upgrade the configuration in the system profile (for "switch"
 # or "boot"), or just build it and create a symlink "result" in the
 # current directory (for "build" and "test").
-if [ -z "$rollback" ]; then
+if [ -z "$rollback" -a -z "$generation" ]; then
     echo "building the system configuration..." >&2
     if [ "$action" = switch -o "$action" = boot ]; then
         if [[ -z $flake ]]; then
@@ -546,7 +555,7 @@ if [ -z "$rollback" ]; then
     if ! [ "$action" = switch -o "$action" = boot ]; then
         copyToTarget "$pathToConfig"
     fi
-else # [ -n "$rollback" ]
+elif [ -n "$rollback" ]; then
     if [ "$action" = switch -o "$action" = boot ]; then
         targetHostCmd nix-env --rollback -p "$profile"
         pathToConfig="$profile"
@@ -556,6 +565,22 @@ else # [ -n "$rollback" ]
             sed -n '/current/ {g; p;}; s/ *\([0-9]*\).*/\1/; h'
         )
         pathToConfig="$profile"-${systemNumber}-link
+        if [ -z "$targetHost" ]; then
+            ln -sT "$pathToConfig" ./result
+        fi
+    else
+        showSyntax
+    fi
+else # [ -n "$generation" ]
+    if [ ! -L "$profile-$generation-link" ]; then
+        echo "Cannot find generation \`$generation'. Run 'nixos-rebuild list-generations' to find available generations." >&2
+        exit 1
+    fi
+    if [ "$action" = switch -o "$action" = boot ]; then
+        targetHostCmd nix-env --switch-generation "$generation" -p "$profile"
+        pathToConfig="$profile"
+    elif [ "$action" = test -o "$action" = build ]; then
+        pathToConfig="$profile"-${generation}-link
         if [ -z "$targetHost" ]; then
             ln -sT "$pathToConfig" ./result
         fi
