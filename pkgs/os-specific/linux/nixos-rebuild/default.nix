@@ -4,6 +4,7 @@
 , gnused
 , gnugrep
 , jq
+, util-linux
 , nix
 , lib
 }:
@@ -19,5 +20,5 @@ substituteAll {
   nix_x86_64_linux = fallback.x86_64-linux;
   nix_i686_linux = fallback.i686-linux;
   nix_aarch64_linux = fallback.aarch64-linux;
-  path = lib.makeBinPath [ coreutils jq gnused gnugrep ];
+  path = lib.makeBinPath [ coreutils jq gnused gnugrep util-linux ];
 }
