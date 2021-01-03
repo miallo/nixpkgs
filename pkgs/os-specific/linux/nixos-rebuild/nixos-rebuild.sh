@@ -36,7 +36,7 @@ while [ "$#" -gt 0 ]; do
       --help)
         showSyntax
         ;;
-      switch|boot|test|build|edit|dry-build|dry-run|dry-activate|build-vm|build-vm-with-bootloader)
+      switch|boot|test|build|edit|dry-build|dry-run|dry-activate|build-vm|build-vm-with-bootloader|list-generations)
         if [ "$i" = dry-run ]; then i=dry-build; fi
         action="$i"
         ;;
@@ -213,7 +213,6 @@ nixBuild() {
         fi
   fi
 }
-
 
 if [ -z "$action" ]; then showSyntax; fi
 
@@ -420,6 +419,36 @@ fi
 
 if [ "$action" = dry-build ]; then
     extraBuildFlags+=(--dry-run)
+fi
+
+if [ "$action" = list-generations ]; then
+    generation_from_dir() {
+        generation_dir="$1"
+        generation_base="$(basename "$generation_dir")" # Has the format "system-123-link" for generation 123
+        echo "$generation_base" | grep -Po '\d+' # pass on only the digits
+    }
+    describe_generation(){
+        generation_dir="$1"
+        generation_number="$(generation_from_dir "$generation_dir")"
+        nixos_version="$(cat "$generation_dir/nixos-version" 2> /dev/null || echo "Unknown")"
+
+        kernel_dir="$(dirname "$(realpath "$generation_dir/kernel")")"
+        kernel_version="$(ls "$kernel_dir/lib/modules")"
+
+        build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
+
+        echo "$generation_number,$nixos_version,$kernel_version,$build_date"
+    }
+
+    description=""
+    for generation_dir in /nix/var/nix/profiles/system-*-link ; do
+        description="$description\n$(describe_generation "$generation_dir")"
+    done
+    current_generation="$(generation_from_dir $(readlink /nix/var/nix/profiles/system))"
+    echo -e "$description" |
+        sed 's/^\<'"$current_generation"'\>.*/&  (current)/' | # add current generation tag to line
+        column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date"
+    exit 0
 fi
 
 
