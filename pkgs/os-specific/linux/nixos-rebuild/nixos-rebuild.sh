@@ -431,6 +431,7 @@ if [ "$action" = list-generations ]; then
         generation_base="$(basename "$generation_dir")" # Has the format "system-123-link" for generation 123
         echo "$generation_base" | grep -Po '\d+' # pass on only the digits
     }
+    current_generation="$(generation_from_dir $(readlink /nix/var/nix/profiles/system))"
     describe_generation(){
         generation_dir="$1"
         generation_number="$(generation_from_dir "$generation_dir")"
@@ -440,17 +441,18 @@ if [ "$action" = list-generations ]; then
         kernel_version="$(ls "$kernel_dir/lib/modules")"
 
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
+        if [ "$generation_number" = "$current_generation" ]; then
+            current="  (current)"
+        fi
 
-        echo "$generation_number,$nixos_version,$kernel_version,$build_date"
+        echo "$generation_number,$nixos_version,$kernel_version,$build_date$current"
     }
 
-    description=""
+    declare -a description
     for generation_dir in /nix/var/nix/profiles/system-*-link ; do
-        description="$description\n$(describe_generation "$generation_dir")"
+        description+=("$(describe_generation "$generation_dir")")
     done
-    current_generation="$(generation_from_dir $(readlink /nix/var/nix/profiles/system))"
-    echo -e "$description" |
-        sed 's/^\<'"$current_generation"'\>.*/&  (current)/' | # add current generation tag to line
+    for i in "${description[@]}"; do echo "$i"; done |
         column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date"
     exit 0
 fi
