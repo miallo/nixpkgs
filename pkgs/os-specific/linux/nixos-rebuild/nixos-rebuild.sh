@@ -344,7 +344,7 @@ fi
 
 # First build Nix, since NixOS may require a newer version than the
 # current one.
-if [ -n "$rollback" -o -n "$generation" -o "$action" = dry-build ]; then
+if [ "$action" = dry-build ]; then
     buildNix=
 fi
 
