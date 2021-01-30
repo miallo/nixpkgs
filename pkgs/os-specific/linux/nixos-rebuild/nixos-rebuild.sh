@@ -431,7 +431,6 @@ if [ "$action" = list-generations ]; then
         generation_base="$(basename "$generation_dir")" # Has the format "system-123-link" for generation 123
         echo "$generation_base" | grep -Po '\d+' # pass on only the digits
     }
-    current_generation="$(generation_from_dir $(readlink /nix/var/nix/profiles/system))"
     describe_generation(){
         generation_dir="$1"
         generation_number="$(generation_from_dir "$generation_dir")"
@@ -441,7 +440,7 @@ if [ "$action" = list-generations ]; then
         kernel_version="$(ls "$kernel_dir/lib/modules")"
 
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
-        if [ "$generation_number" = "$current_generation" ]; then
+        if [ "$(basename "$generation_dir")" = "$(readlink $profile)" ]; then
             current="  (current)"
         fi
 
@@ -449,7 +448,7 @@ if [ "$action" = list-generations ]; then
     }
 
     declare -a description
-    for generation_dir in /nix/var/nix/profiles/system-*-link ; do
+    for generation_dir in $profile-*-link ; do
         description+=("$(describe_generation "$generation_dir")")
     done
     for i in "${description[@]}"; do echo "$i"; done |
