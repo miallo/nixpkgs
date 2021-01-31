@@ -520,7 +520,7 @@ elif [ -n "$rollback" ]; then
         showSyntax
     fi
 else # [ -n "$generation" ]
-    if [ ! -L "/nix/var/nix/profiles/system-$generation-link" ]; then
+    if [ ! -L "$profile-$generation-link" ]; then
         >&2 echo "Cannot find generation $generation. Run 'nixos-rebuild list-generations' to find available generations."
         exit 1
     fi
