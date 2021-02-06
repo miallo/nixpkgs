@@ -439,12 +439,21 @@ if [ "$action" = list-generations ]; then
         kernel_dir="$(dirname "$(realpath "$generation_dir/kernel")")"
         kernel_version="$(ls "$kernel_dir/lib/modules")"
 
+        configurationRevision="$($generation_dir/sw/bin/nixos-version --configurationRevision 2> /dev/null)"
+
+        # Old nixos-version output ignored unknown flags and just printed the version
+        # therefore the following workaround is done not to show the default output
+        nixos_version_default="$($generation_dir/sw/bin/nixos-version)"
+        if [ "$configurationRevision" = "$nixos_version_default" ]; then
+             configurationRevision=""
+        fi
+
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
         if [ "$(basename "$generation_dir")" = "$(readlink $profile)" ]; then
             current="  (current)"
         fi
 
-        echo "$generation_number,$nixos_version,$kernel_version,$build_date$current"
+        echo "$generation_number,$nixos_version,$kernel_version,$build_date,$configurationRevision$current"
     }
 
     declare -a description
@@ -452,7 +461,7 @@ if [ "$action" = list-generations ]; then
         description+=("$(describe_generation "$generation_dir")")
     done
     for i in "${description[@]}"; do echo "$i"; done |
-        column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date"
+        column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date,Configuration Revision"
     exit 0
 fi
 
