@@ -440,14 +440,11 @@ if [ "$action" = list-generations ]; then
         kernel_version="$(ls "$kernel_dir/lib/modules")"
 
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
-
-        nixpkgs_hash="$($generation_dir/sw/bin/nixos-version --hash 2> /dev/null | head -c 11)"
-
         if [ "$(basename "$generation_dir")" = "$(readlink $profile)" ]; then
             current="  (current)"
         fi
 
-        echo "$generation_number,$build_date,$nixos_version,$kernel_version,$nixpkgs_hash$current"
+        echo "$generation_number,$nixos_version,$kernel_version,$build_date$current"
     }
 
     declare -a description
@@ -455,7 +452,7 @@ if [ "$action" = list-generations ]; then
         description+=("$(describe_generation "$generation_dir")")
     done
     for i in "${description[@]}"; do echo "$i"; done |
-        column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Nixpkg Hash"
+        column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date"
     exit 0
 fi
 
