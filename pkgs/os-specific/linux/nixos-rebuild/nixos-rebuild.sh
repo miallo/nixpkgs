@@ -453,7 +453,7 @@ if [ "$action" = list-generations ]; then
             current="  (current)"
         fi
 
-        echo "$generation_number,$nixos_version,$kernel_version,$build_date,$configurationRevision$current"
+        echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current"
     }
 
     declare -a description
@@ -461,7 +461,7 @@ if [ "$action" = list-generations ]; then
         description+=("$(describe_generation "$generation_dir")")
     done
     for i in "${description[@]}"; do echo "$i"; done |
-        column --separator "," --table --table-columns "Generation,NixOS version,Kernel,Build-date,Configuration Revision"
+        column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision"
     exit 0
 fi
 
