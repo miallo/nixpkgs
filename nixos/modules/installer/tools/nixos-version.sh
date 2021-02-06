@@ -7,7 +7,7 @@ case "$1" in
     ;;
   --hash|--revision)
     if ! [[ @revision@ =~ ^[0-9a-f]+$ ]]; then
-      echo "$0: Nixpkgs commit hash is unknown" >&2
+      echo "$0: Nixpkgs commit hash is unknown"
       exit 1
     fi
     echo "@revision@"
