@@ -18,8 +18,8 @@ case "$1" in
     echo "@revision@"
     ;;
   --configurationRevision)
-    if ! [[ @configurationRevision@ =~ ^[0-9a-f]+$ ]]; then
-      echo "$0: configuration commit hash is unknown" >&2
+    if [[ "@configurationRevision@" =~ "@" ]]; then
+      echo "$0: configuration revision is unknown" >&2
       exit 1
     fi
     echo "@configurationRevision@"
