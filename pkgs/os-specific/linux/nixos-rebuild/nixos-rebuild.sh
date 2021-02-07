@@ -429,7 +429,8 @@ if [ "$action" = list-generations ]; then
     generation_from_dir() {
         generation_dir="$1"
         generation_base="$(basename "$generation_dir")" # Has the format "system-123-link" for generation 123
-        echo "$generation_base" | grep -Po '\d+' # pass on only the digits
+        no_link_gen="${generation_base%-link}"  # remove the "-link"
+        echo ${no_link_gen##*-} # remove everything before the last dash
     }
     describe_generation(){
         generation_dir="$1"
