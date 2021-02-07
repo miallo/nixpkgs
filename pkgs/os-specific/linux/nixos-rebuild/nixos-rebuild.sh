@@ -530,7 +530,7 @@ elif [ -n "$rollback" ]; then
     fi
 else # [ -n "$generation" ]
     if [ ! -L "$profile-$generation-link" ]; then
-        >&2 echo "Cannot find generation $generation. Run 'nixos-rebuild list-generations' to find available generations."
+        echo "Cannot find generation $generation. Run 'nixos-rebuild list-generations' to find available generations." >&2
         exit 1
     fi
     if [ "$action" = switch -o "$action" = boot ]; then
