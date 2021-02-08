@@ -426,6 +426,11 @@ if [ "$action" = dry-build ]; then
 fi
 
 if [ "$action" = list-generations ]; then
+    if [ ! -L "$profile" ]; then
+        echo "No profile \`$(basename $profile)' found" >&2
+        exit 1
+    fi
+
     generation_from_dir() {
         generation_dir="$1"
         generation_base="$(basename "$generation_dir")" # Has the format "system-123-link" for generation 123
