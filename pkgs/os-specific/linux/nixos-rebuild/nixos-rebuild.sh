@@ -55,6 +55,11 @@ while [ "$#" -gt 0 ]; do
         rollback=1
         ;;
       --generation)
+        if [ $# -eq 1 ]; then
+            echo "Must provide a generation number" >&2
+            echo "Usage: \`$(basename $0) $action --generation <NUMBER>'" >&2
+            exit 1
+        fi
         generation="$1"; shift 1
         ;;
       --upgrade)
@@ -536,7 +541,7 @@ elif [ -n "$rollback" ]; then
     fi
 else # [ -n "$generation" ]
     if [ ! -L "$profile-$generation-link" ]; then
-        echo "Cannot find generation $generation. Run 'nixos-rebuild list-generations' to find available generations." >&2
+        echo "Cannot find generation \`$generation'. Run 'nixos-rebuild list-generations' to find available generations." >&2
         exit 1
     fi
     if [ "$action" = switch -o "$action" = boot ]; then
