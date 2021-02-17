@@ -460,11 +460,13 @@ if [ "$action" = list-generations ]; then
         fi
 
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
+
+        unset current_generation_tag
         if [ "$(basename "$generation_dir")" = "$(readlink $profile)" ]; then
-            current="  (current)"
+            current_generation_tag="  (current)"
         fi
 
-        echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current"
+        echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
     }
 
     declare -a description
