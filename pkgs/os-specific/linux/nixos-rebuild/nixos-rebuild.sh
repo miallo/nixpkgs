@@ -469,11 +469,11 @@ if [ "$action" = list-generations ]; then
         echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
     }
 
-    declare -a description
-    for generation_dir in $profile-*-link ; do
-        description+=("$(describe_generation "$generation_dir")")
-    done
-    for i in "${description[@]}"; do echo "$i"; done |
+    find $(dirname $profile) -regex "$profile-[0-9]+-link" |
+        sort |
+        while read -r generation_dir; do
+            describe_generation "$generation_dir"
+        done |
         column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision"
     exit 0
 fi
