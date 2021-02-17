@@ -450,7 +450,7 @@ if [ "$action" = list-generations ]; then
         kernel_dir="$(dirname "$(realpath "$generation_dir/kernel")")"
         kernel_version="$(ls "$kernel_dir/lib/modules")"
 
-        configurationRevision="$($generation_dir/sw/bin/nixos-version --configurationRevision 2> /dev/null)"
+        configurationRevision="$($generation_dir/sw/bin/nixos-version --configurationRevision 2> /dev/null || :)"
 
         # Old nixos-version output ignored unknown flags and just printed the version
         # therefore the following workaround is done not to show the default output
