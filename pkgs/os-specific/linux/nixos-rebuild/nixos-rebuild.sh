@@ -474,7 +474,8 @@ if [ "$action" = list-generations ]; then
         while read -r generation_dir; do
             describe_generation "$generation_dir"
         done |
-        column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision"
+        column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" |
+        ${PAGER:less}
     exit 0
 fi
 
