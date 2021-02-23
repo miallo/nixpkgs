@@ -348,10 +348,10 @@
      <listitem>
       <para>
        List the available generations in a similar manner to the boot loader
-       menu. It shows the generation number, NixOS version, kernel version and
-       the build date and time. This is useful to get information e.g. for
-       which generation to roll back to with
-       <command>nixos-rebuild switch --generation <replaceable>N</replaceable></command>
+       menu. It shows the generation number, build date and time, NixOS version,
+       kernel version and the configuration revision. This is useful to get
+       information e.g. for which generation to roll back to with
+       <command>nixos-rebuild switch --generation <replaceable>N</replaceable></command>.
       </para>
     </listitem>
    </varlistentry>
