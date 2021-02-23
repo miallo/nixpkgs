@@ -343,7 +343,7 @@
 
     <varlistentry>
      <term>
-      <option>list-generations</option>
+      <option>list-generations</option> <optional>--json</optional>
      </term>
      <listitem>
       <para>
@@ -352,6 +352,7 @@
        kernel version and the configuration revision. This is useful to get
        information e.g. for which generation to roll back to with
        <command>nixos-rebuild switch --generation <replaceable>N</replaceable></command>.
+       There is also a json version of output available.
       </para>
     </listitem>
    </varlistentry>

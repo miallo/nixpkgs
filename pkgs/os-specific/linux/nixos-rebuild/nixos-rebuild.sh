@@ -30,6 +30,7 @@ profile=/nix/var/nix/profiles/system
 buildHost=
 targetHost=
 maybeSudo=()
+json=
 
 while [ "$#" -gt 0 ]; do
     i="$1"; shift 1
@@ -128,6 +129,9 @@ while [ "$#" -gt 0 ]; do
         j="$1"; shift 1
         k="$1"; shift 1
         lockFlags+=("$i" "$j" "$k")
+        ;;
+      --json)
+        json=1
         ;;
       *)
         echo "$0: unknown option \`$i'"
@@ -461,12 +465,24 @@ if [ "$action" = list-generations ]; then
 
         build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
 
-        unset current_generation_tag
+        if [ -z "$json" ]; then
+            unset current_generation_tag
+        else
+            current_generation_tag="false"
+        fi
         if [ "$(basename "$generation_dir")" = "$(readlink $profile)" ]; then
-            current_generation_tag="  (current)"
+            if [ -z "$json" ]; then
+                current_generation_tag="  (current)"
+            else
+                current_generation_tag="true"
+            fi
         fi
 
-        echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
+        if [ -z $json ]; then
+            echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
+        else
+            echo "\"$generation_number\": { \"date\": \"$build_date\", \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
+        fi
     }
 
     find $(dirname $profile) -regex "$profile-[0-9]+-link" |
@@ -474,8 +490,12 @@ if [ "$action" = list-generations ]; then
         while read -r generation_dir; do
             describe_generation "$generation_dir"
         done |
-        column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" |
-        ${PAGER:less}
+        if [ -z "$json" ]; then
+            column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" |
+                ${PAGER:less}
+        else
+            tr '\n' ',' | sed 's/,$//' | cat <(echo '{') - <(echo '}')
+        fi
     exit 0
 fi
 
