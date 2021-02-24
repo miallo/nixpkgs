@@ -56,9 +56,9 @@ while [ "$#" -gt 0 ]; do
         rollback=1
         ;;
       --generation)
-        if [ $# -eq 1 ]; then
+        if [ $# -eq 0 ]; then
             echo "Must provide a generation number" >&2
-            echo "Usage: \`$(basename $0) $action --generation <NUMBER>'" >&2
+            echo "Usage: \`$(basename $0) ${action:-switch} --generation <NUMBER>'" >&2
             exit 1
         fi
         generation="$1"; shift 1
