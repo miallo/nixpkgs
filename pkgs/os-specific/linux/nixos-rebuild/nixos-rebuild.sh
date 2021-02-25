@@ -452,7 +452,7 @@ if [ "$action" = list-generations ]; then
         nixos_version="$(cat "$generation_dir/nixos-version" 2> /dev/null || echo "Unknown")"
 
         kernel_dir="$(dirname "$(realpath "$generation_dir/kernel")")"
-        kernel_version="$(ls "$kernel_dir/lib/modules")"
+        kernel_version="$(ls "$kernel_dir/lib/modules" || echo Unknown)"
 
         configurationRevision="$($generation_dir/sw/bin/nixos-version --configurationRevision 2> /dev/null || :)"
 
