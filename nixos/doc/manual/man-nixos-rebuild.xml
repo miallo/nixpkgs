@@ -456,7 +456,7 @@
     <listitem>
      <para>
       Instead of building a new configuration as specified by
-      <filename>/etc/nixos/configuration.nix</filename>, roll back to a
+      <filename>/etc/nixos/configuration.nix</filename>, switch to a
       specified <replaceable>generation</replaceable> number. A list of
       generations can be found using
       <command>nixos-rebuild list-generations</command>.
