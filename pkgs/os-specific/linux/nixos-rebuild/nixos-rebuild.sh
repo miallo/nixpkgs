@@ -481,7 +481,7 @@ if [ "$action" = list-generations ]; then
         if [ -z $json ]; then
             echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
         else
-            echo "\"$generation_number\": { \"date\": \"$build_date\", \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
+            echo "{ \"generation\": \"$generation_number\", \"date\": \"$build_date\", \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
         fi
     }
 
@@ -494,7 +494,7 @@ if [ "$action" = list-generations ]; then
             column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" |
                 ${PAGER:less}
         else
-            tr '\n' ',' | sed 's/,$//' | cat <(echo '{') - <(echo '}')
+            tr '\n' ',' | sed 's/,$//' | cat <(echo '[') - <(echo ']')
         fi
     exit 0
 fi
