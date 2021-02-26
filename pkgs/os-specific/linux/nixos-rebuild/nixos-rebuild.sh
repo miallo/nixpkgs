@@ -463,7 +463,12 @@ if [ "$action" = list-generations ]; then
              configurationRevision=""
         fi
 
-        build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
+        if [ -z "$json" ]; then
+            build_date="$(date --date="@$(stat "$generation_dir" --format=%W)" "+%a %F %T")"
+        else
+            # jq automatically quotes the output => don't try to quote it in output!
+            build_date="$(stat "$generation_dir" --format=%W | jq 'todate')"
+        fi
 
         if [ -z "$json" ]; then
             unset current_generation_tag
@@ -481,7 +486,7 @@ if [ "$action" = list-generations ]; then
         if [ -z $json ]; then
             echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
         else
-            echo "{ \"generation\": \"$generation_number\", \"date\": \"$build_date\", \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
+            echo "{ \"generation\": \"$generation_number\", \"date\": $build_date, \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
         fi
     }
 
