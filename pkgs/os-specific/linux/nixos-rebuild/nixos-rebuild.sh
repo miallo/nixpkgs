@@ -486,7 +486,11 @@ if [ "$action" = list-generations ]; then
         if [ -z $json ]; then
             echo "$generation_number,$build_date,$nixos_version,$kernel_version,$configurationRevision$current_generation_tag"
         else
-            echo "{ \"generation\": \"$generation_number\", \"date\": $build_date, \"nixosVersion\": \"$nixos_version\", \"kernelVersion\": \"$kernel_version\", \"configurationRevision\": \"$configurationRevision\", \"current\": $current_generation_tag}"
+            # Escape userdefined strings
+            nixos_version="$(jq -aR <<< "$nixos_version")"
+            kernel_version="$(jq -aR <<< "$kernel_version")"
+            configurationRevision="$(jq -aR <<< "$configurationRevision")"
+            echo "{ \"generation\": $generation_number, \"date\": $build_date, \"nixosVersion\": $nixos_version, \"kernelVersion\": $kernel_version, \"configurationRevision\": $configurationRevision, \"current\": $current_generation_tag}"
         fi
     }
 
