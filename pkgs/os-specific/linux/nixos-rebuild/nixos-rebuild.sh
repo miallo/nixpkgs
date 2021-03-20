@@ -346,8 +346,6 @@ prebuiltNix() {
     fi
 }
 
-remotePATH=
-
 if [[ -n $buildNix && -z $flake ]]; then
     echo "building Nix..." >&2
     nixDrv=
