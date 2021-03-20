@@ -126,7 +126,7 @@ if [ -n "$SUDO_USER" ]; then
     maybeSudo=(sudo --)
 fi
 
-if [ -z "$buildHost" -a -n "$targetHost" ]; then
+if [ -z "$buildHost" ] && [ -n "$targetHost" ]; then
     buildHost="$targetHost"
 fi
 if [ "$targetHost" = localhost ]; then
@@ -218,7 +218,7 @@ if [ -z "$action" ]; then showSyntax; fi
 # executed, so it's safe to run nixos-rebuild against a potentially
 # untrusted tree.
 canRun=
-if [ "$action" = switch -o "$action" = boot -o "$action" = test ]; then
+if [ "$action" = switch ] || [ "$action" = boot ] || [ "$action" = test ]; then
     canRun=1
 fi
 
@@ -322,7 +322,7 @@ trap cleanup EXIT
 
 # First build Nix, since NixOS may require a newer version than the
 # current one.
-if [ -n "$rollback" -o "$action" = dry-build ]; then
+if [ -n "$rollback" ] || [ "$action" = dry-build ]; then
     buildNix=
 fi
 
@@ -407,7 +407,7 @@ fi
 # current directory (for "build" and "test").
 if [ -z "$rollback" ]; then
     echo "building the system configuration..." >&2
-    if [ "$action" = switch -o "$action" = boot ]; then
+    if [ "$action" = switch ] || [ "$action" = boot ]; then
         if [[ -z $flake ]]; then
             pathToConfig="$(nixBuild '<nixpkgs/nixos>' --no-out-link -A system "${extraBuildFlags[@]}")"
         else
@@ -418,7 +418,7 @@ if [ -z "$rollback" ]; then
         fi
         copyToTarget "$pathToConfig"
         targetHostCmd nix-env -p "$profile" --set "$pathToConfig"
-    elif [ "$action" = test -o "$action" = build -o "$action" = dry-build -o "$action" = dry-activate ]; then
+    elif [ "$action" = test ] || [ "$action" = build ] || [ "$action" = dry-build ] || [ "$action" = dry-activate ]; then
         if [[ -z $flake ]]; then
             pathToConfig="$(nixBuild '<nixpkgs/nixos>' -A system -k "${extraBuildFlags[@]}")"
         else
@@ -445,14 +445,14 @@ if [ -z "$rollback" ]; then
         showSyntax
     fi
     # Copy build to target host if we haven't already done it
-    if ! [ "$action" = switch -o "$action" = boot ]; then
+    if ! [ "$action" = switch ] && ! [ "$action" = boot ]; then
         copyToTarget "$pathToConfig"
     fi
 else # [ -n "$rollback" ]
-    if [ "$action" = switch -o "$action" = boot ]; then
+    if [ "$action" = switch ] || [ "$action" = boot ]; then
         targetHostCmd nix-env --rollback -p "$profile"
         pathToConfig="$profile"
-    elif [ "$action" = test -o "$action" = build ]; then
+    elif [ "$action" = test ] || [ "$action" = build ]; then
         systemNumber=$(
             targetHostCmd nix-env -p "$profile" --list-generations |
             sed -n '/current/ {g; p;}; s/ *\([0-9]*\).*/\1/; h'
@@ -469,7 +469,7 @@ fi
 
 # If we're not just building, then make the new configuration the boot
 # default and/or activate it now.
-if [ "$action" = switch -o "$action" = boot -o "$action" = test -o "$action" = dry-activate ]; then
+if [ "$action" = switch ] || [ "$action" = boot ] || [ "$action" = test ] || [ "$action" = dry-activate ]; then
     if ! targetHostCmd $pathToConfig/bin/switch-to-configuration "$action"; then
         echo "warning: error(s) occurred while switching to the new configuration" >&2
         exit 1
