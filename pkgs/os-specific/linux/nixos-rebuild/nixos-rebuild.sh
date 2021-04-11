@@ -500,7 +500,7 @@ if [ "$action" = list-generations ]; then
             describe_generation "$generation_dir"
         done |
         if [ -z "$json" ]; then
-            column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" |
+            column --separator "," --table --table-columns "Generation,Build-date,NixOS version,Kernel,Configuration Revision" | jq |
                 ${PAGER:less}
         else
             tr '\n' ',' | sed 's/,$//' | cat <(echo '[') - <(echo ']')
